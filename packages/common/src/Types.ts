@@ -16,3 +16,7 @@ export type GoogleAuthClient =
   | UserRefreshClient
   | Impersonated
   | BaseExternalAccountClient
+
+export interface TagCollection {
+  [index: string]: string
+}

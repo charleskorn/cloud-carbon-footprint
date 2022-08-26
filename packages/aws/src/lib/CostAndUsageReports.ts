@@ -528,29 +528,27 @@ export default class CostAndUsageReports {
     end: Date,
     grouping: GroupBy,
   ): Promise<Athena.Row[]> {
+    const groupingGranularity = AWS_QUERY_GROUP_BY[grouping]
+    const formattedStartDate = moment.utc(start).format('YYYY-MM-DD')
+    const formattedLineItemTypes = LINE_ITEM_TYPES.join(`', '`)
+    const formattedEndDate = moment.utc(end).format('YYYY-MM-DD')
+
     const params = {
-      QueryString: `SELECT DATE(DATE_TRUNC('${
-        AWS_QUERY_GROUP_BY[grouping]
-      }', line_item_usage_start_date)) AS timestamp,
+      QueryString: `SELECT DATE(DATE_TRUNC('${groupingGranularity}', line_item_usage_start_date)) AS timestamp,
                         line_item_usage_account_id as accountName,
                         product_region as region,
                         line_item_product_code as serviceName,
                         line_item_usage_type as usageType,
                         pricing_unit as usageUnit,
                         product_vcpu as vCpus,
+                        resource_tags_user_environment as tag_user_environment,
                     SUM(line_item_usage_amount) as usageAmount,
                     SUM(line_item_blended_cost) as cost
                     FROM ${this.tableName}
-                    WHERE line_item_line_item_type IN ('${LINE_ITEM_TYPES.join(
-                      `', '`,
-                    )}')
-                    AND line_item_usage_start_date BETWEEN DATE('${moment
-                      .utc(start)
-                      .format('YYYY-MM-DD')}') AND DATE('${moment
-        .utc(end)
-        .format('YYYY-MM-DD')}')
+                    WHERE line_item_line_item_type IN ('${formattedLineItemTypes}')
+                      AND line_item_usage_start_date BETWEEN DATE ('${formattedStartDate}')AND DATE ('${formattedEndDate}')
                     GROUP BY 
-                        1,2,3,4,5,6,7`,
+                        1,2,3,4,5,6,7,8`,
       QueryExecutionContext: {
         Database: this.dataBaseName,
       },

@@ -73,6 +73,7 @@ export default class CloudProviderAccount {
                 co2e: estimate?.co2e || 0,
                 cost: cost?.amount || 0,
                 usesAverageCPUConstant: !!estimate?.usesAverageCPUConstant,
+                tags: {}, // TODO: this method isn't used for CUR-based estimation, so skip it for now
               },
             ],
             periodStartDate: startDate,

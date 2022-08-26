@@ -5,6 +5,7 @@
 import { reduceBy } from 'ramda'
 import { GroupBy } from './Config'
 import { getPeriodEndDate } from './helpers'
+import { TagCollection } from './Types'
 
 export interface EstimationResult {
   readonly timestamp: Date
@@ -25,6 +26,7 @@ export interface ServiceData {
   accountName: string
   serviceName: string
   region: string
+  readonly tags: TagCollection
 }
 
 export const reduceByTimestamp = (

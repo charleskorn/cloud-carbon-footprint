@@ -6,7 +6,11 @@ import { median, reduceBy } from 'ramda'
 
 import { COMPUTE_PROCESSOR_TYPES } from './compute'
 import { BillingDataRow, CloudConstantsEmissionsFactors } from '.'
-import { GroupBy, getPeriodEndDate } from '@cloud-carbon-footprint/common'
+import {
+  GroupBy,
+  getPeriodEndDate,
+  TagCollection,
+} from '@cloud-carbon-footprint/common'
 
 export default interface FootprintEstimate {
   timestamp: Date
@@ -82,6 +86,7 @@ export interface MutableServiceEstimate {
   cost: number
   region: string
   usesAverageCPUConstant: boolean
+  tags: TagCollection
 }
 
 export const accumulateKilowattHours = (
@@ -180,6 +185,7 @@ export const appendOrAccumulateEstimatesByDay = (
     accountName: rowData.accountName,
     region: rowData.region,
     cost: rowData.cost,
+    tags: rowData.tags,
   }
 
   if (dayExistsInEstimates(results, rowData.timestamp)) {
@@ -189,7 +195,7 @@ export const appendOrAccumulateEstimatesByDay = (
     )
 
     if (
-      estimateExistsForRegionAndServiceAndAccount(
+      estimateExistsForRegionAndServiceAndAccountAndTags(
         results,
         rowData.timestamp,
         serviceEstimate,
@@ -197,7 +203,7 @@ export const appendOrAccumulateEstimatesByDay = (
     ) {
       const estimateToAcc = estimatesForDay.serviceEstimates.find(
         (estimateForDay) => {
-          return hasSameRegionAndServiceAndAccount(
+          return hasSameRegionAndServiceAndAccountAndTags(
             estimateForDay,
             serviceEstimate,
           )
@@ -234,7 +240,7 @@ function dayExistsInEstimates(
   )
 }
 
-function estimateExistsForRegionAndServiceAndAccount(
+function estimateExistsForRegionAndServiceAndAccountAndTags(
   results: MutableEstimationResult[],
   timestamp: Date,
   serviceEstimate: MutableServiceEstimate,
@@ -243,18 +249,22 @@ function estimateExistsForRegionAndServiceAndAccount(
     (estimate) => estimate.timestamp.getTime() === timestamp.getTime(),
   )
   return estimatesForDay.serviceEstimates.some((estimateForDay) => {
-    return hasSameRegionAndServiceAndAccount(estimateForDay, serviceEstimate)
+    return hasSameRegionAndServiceAndAccountAndTags(
+      estimateForDay,
+      serviceEstimate,
+    )
   })
 }
 
-function hasSameRegionAndServiceAndAccount(
+function hasSameRegionAndServiceAndAccountAndTags(
   estimateOne: MutableServiceEstimate,
   estimateTwo: MutableServiceEstimate,
 ): boolean {
   return (
     estimateOne.region === estimateTwo.region &&
     estimateOne.serviceName === estimateTwo.serviceName &&
-    estimateOne.accountId === estimateTwo.accountId
+    estimateOne.accountId === estimateTwo.accountId &&
+    JSON.stringify(estimateOne.tags) === JSON.stringify(estimateTwo.tags) // HORRIBLE HACK: need better way to compare two sets of tags
   )
 }
 

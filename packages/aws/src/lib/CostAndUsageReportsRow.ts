@@ -51,6 +51,10 @@ export default class CostAndUsageReportsRow extends BillingDataRow {
     this.instanceType = this.parseInstanceTypeFromUsageType()
     this.replicationFactor = this.getReplicationFactor(billingDataRow)
 
+    this.tags = {
+      'user:Environment': billingDataRow['tag_user_environment'],
+    }
+
     const config = configLoader()
     const AWS: CCFConfig['AWS'] = config.AWS
     if (!AWS.accounts) AWS.accounts = []

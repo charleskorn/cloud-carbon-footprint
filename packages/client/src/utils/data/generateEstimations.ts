@@ -31,6 +31,7 @@ const fakeServiceMap: () => { [key: string]: ServiceData } = () => {
       cost: getRandomNumberInRange(1.5, 2),
       region: 'us-east-1',
       usesAverageCPUConstant: false,
+      tags: {},
     },
     s3: {
       cloudProvider: 'AWS',
@@ -42,6 +43,7 @@ const fakeServiceMap: () => { [key: string]: ServiceData } = () => {
       cost: getRandomNumberInRange(1.5, 2),
       region: 'us-east-2',
       usesAverageCPUConstant: false,
+      tags: {},
     },
     ec2: {
       cloudProvider: 'AWS',
@@ -53,6 +55,7 @@ const fakeServiceMap: () => { [key: string]: ServiceData } = () => {
       cost: getRandomNumberInRange(1.5, 2),
       region: 'us-west-1',
       usesAverageCPUConstant: false,
+      tags: {},
     },
     rds: {
       cloudProvider: 'AWS',
@@ -64,6 +67,7 @@ const fakeServiceMap: () => { [key: string]: ServiceData } = () => {
       cost: getRandomNumberInRange(1.5, 2),
       region: 'us-west-2',
       usesAverageCPUConstant: false,
+      tags: {},
     },
     lambda: {
       cloudProvider: 'AWS',
@@ -75,6 +79,7 @@ const fakeServiceMap: () => { [key: string]: ServiceData } = () => {
       cost: getRandomNumberInRange(1.5, 2),
       region: 'us-east-1',
       usesAverageCPUConstant: false,
+      tags: {},
     },
     elasticache: {
       cloudProvider: 'AWS',
@@ -86,6 +91,7 @@ const fakeServiceMap: () => { [key: string]: ServiceData } = () => {
       cost: getRandomNumberInRange(1.5, 2),
       region: 'us-east-1',
       usesAverageCPUConstant: false,
+      tags: {},
     },
     computeEngine: {
       cloudProvider: 'GCP',
@@ -97,6 +103,7 @@ const fakeServiceMap: () => { [key: string]: ServiceData } = () => {
       cost: getRandomNumberInRange(1.5, 2),
       region: 'us-east1',
       usesAverageCPUConstant: false,
+      tags: {},
     },
     virtualMachines: {
       cloudProvider: 'AZURE',
@@ -108,6 +115,7 @@ const fakeServiceMap: () => { [key: string]: ServiceData } = () => {
       cost: getRandomNumberInRange(1.5, 2),
       region: 'UK South',
       usesAverageCPUConstant: false,
+      tags: {},
     },
   }
 }

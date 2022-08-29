@@ -52,7 +52,7 @@ export default class CostAndUsageReportsRow extends BillingDataRow {
     this.replicationFactor = this.getReplicationFactor(billingDataRow)
 
     this.tags = {
-      'user:Environment': billingDataRow['tag_user_environment'],
+      Environment: billingDataRow['tag_user_environment'],
     }
 
     const config = configLoader()

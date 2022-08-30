@@ -3,7 +3,10 @@
  */
 
 import { Athena } from 'aws-sdk'
-import { BillingDataRow } from '@cloud-carbon-footprint/core'
+import {
+  BillingDataRow,
+  COMPUTE_PROCESSOR_TYPES,
+} from '@cloud-carbon-footprint/core'
 import {
   configLoader,
   containsAny,
@@ -13,6 +16,8 @@ import {
   BURSTABLE_INSTANCE_BASELINE_UTILIZATION,
   EC2_INSTANCE_TYPES,
   GPU_INSTANCES_TYPES,
+  INSTANCE_TYPE_COMPUTE_PROCESSOR_MAPPING,
+  INSTANCE_TYPE_GPU_PROCESSOR_MAPPING,
   MSK_INSTANCE_TYPES,
   REDSHIFT_INSTANCE_TYPES,
 } from './AWSInstanceTypes'
@@ -26,6 +31,7 @@ const SIMPLE_DB_VCPUS__PER_USAGE = 1
 
 export default class CostAndUsageReportsRow extends BillingDataRow {
   constructor(usageRowsHeader: Athena.Row, rowData: Athena.datumList) {
+    // FIXME: this doesn't seem like it would be particularly performant at scale
     const billingDataRowKeys = usageRowsHeader.Data.map((column) =>
       Object.values(column),
     ).flat()
@@ -165,6 +171,34 @@ export default class CostAndUsageReportsRow extends BillingDataRow {
           usageRow.region,
         )) ||
       AWS_REPLICATION_FACTORS_FOR_SERVICES.DEFAULT()
+    )
+  }
+
+  public getComputeProcessors(): string[] {
+    if (this.serviceName === 'AWSLambda') {
+      if (this.usageType.endsWith('-ARM')) {
+        return [COMPUTE_PROCESSOR_TYPES.AWS_GRAVITON_2]
+      } else {
+        return [COMPUTE_PROCESSOR_TYPES.UNKNOWN]
+      }
+    }
+
+    return (
+      INSTANCE_TYPE_COMPUTE_PROCESSOR_MAPPING[this.instanceType] || [
+        COMPUTE_PROCESSOR_TYPES.UNKNOWN,
+      ]
+    )
+  }
+
+  public getGPUComputeProcessors(): string[] {
+    if (this.serviceName === 'AWSLambda') {
+      return [COMPUTE_PROCESSOR_TYPES.UNKNOWN]
+    }
+
+    return (
+      INSTANCE_TYPE_GPU_PROCESSOR_MAPPING[this.instanceType] || [
+        COMPUTE_PROCESSOR_TYPES.UNKNOWN,
+      ]
     )
   }
 }
